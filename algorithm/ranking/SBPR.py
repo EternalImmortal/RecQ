@@ -12,7 +12,7 @@ class SBPR(SocialRecommender):
 
     def initModel(self):
         super(SBPR, self).initModel()
-        print 'Preparing item sets...'
+        print('Preparing item sets...')
         self.PositiveSet = defaultdict(dict)
         self.FPSet = defaultdict(dict)
         # self.NegativeSet = defaultdict(list)
@@ -23,12 +23,12 @@ class SBPR(SocialRecommender):
                     self.PositiveSet[user][item] = 1
                     # else:
                     #     self.NegativeSet[user].append(item)
-            if self.social.user.has_key(user):
+            if user in self.social.user:
                 for friend in self.social.getFollowees(user):
-                    if self.data.user.has_key(friend):
+                    if friend in self.data.user:
                         for item in self.data.trainSet_u[friend]:
-                            if not self.PositiveSet[user].has_key(item):
-                                if not self.FPSet[user].has_key(item):
+                            if item not in self.PositiveSet[user]:
+                                if item not in self.FPSet[user]:
                                     self.FPSet[user][item] = 1
                                 else:
                                     self.FPSet[user][item] += 1
@@ -36,14 +36,14 @@ class SBPR(SocialRecommender):
     def buildModel(self):
         self.b = np.random.random(self.num_items)
 
-        print 'Training...'
+        print('Training...')
         iteration = 0
         while iteration < self.maxIter:
             self.loss = 0
-            itemList = self.data.item.keys()
+            itemList = list(self.data.item.keys())
             for user in self.PositiveSet:
                 u = self.data.user[user]
-                kItems = self.FPSet[user].keys()
+                kItems = list(self.FPSet[user].keys())
                 for item in self.PositiveSet[user]:
                     i = self.data.item[item]
 
@@ -58,7 +58,7 @@ class SBPR(SocialRecommender):
 
 
                         item_j = choice(itemList)
-                        while (self.PositiveSet[user].has_key(item_j) or self.FPSet.has_key(item_j)):
+                        while (item_j in self.PositiveSet[user] or item_j in self.FPSet):
                             item_j = choice(itemList)
                         j = self.data.item[item_j]
                         s = sigmoid(self.P[u].dot(self.Q[k]) - self.P[u].dot(self.Q[j])+self.b[k]-self.b[j])
@@ -76,7 +76,7 @@ class SBPR(SocialRecommender):
                                      - log(sigmoid(self.P[u].dot(self.Q[k]) - self.P[u].dot(self.Q[j])))
                     else:
                         item_j = choice(itemList)
-                        while (self.PositiveSet[user].has_key(item_j)):
+                        while (item_j in self.PositiveSet[user]):
                             item_j = choice(itemList)
                         j = self.data.item[item_j]
                         s = sigmoid(self.P[u].dot(self.Q[i]) - self.P[u].dot(self.Q[j])+self.b[i]-self.b[j])
@@ -106,7 +106,7 @@ class SBPR(SocialRecommender):
                 batch_id=self.train_size
 
             u_idx,i_idx,f_idx,j_idx,weights = [],[],[],[],[]
-            item_list = self.data.item.keys()
+            item_list = list(self.data.item.keys())
             for i,user in enumerate(users):
 
                 i_idx.append(self.data.item[items[i]])
@@ -116,7 +116,7 @@ class SBPR(SocialRecommender):
                     f_item = choice(item_list)
                     weights.append(0)
                 else:
-                    f_item = choice(self.FPSet[user].keys())
+                    f_item = choice(list(self.FPSet[user].keys()))
                     weights.append(self.FPSet[user][f_item])
 
                 f_idx.append(self.data.item[f_item])
@@ -161,7 +161,7 @@ class SBPR(SocialRecommender):
                     user_idx, i_idx, s_idx,j_idx,weights = batch
                     _, l = sess.run([train, loss],
                                     feed_dict={self.u_idx: user_idx, self.neg_idx: j_idx, self.v_idx: i_idx,self.social_idx:s_idx,self.weights:weights})
-                    print 'training:', iteration + 1, 'batch', n, 'loss:', l
+                    print('training:', iteration + 1, 'batch', n, 'loss:', l)
             self.P, self.Q,self.b = sess.run([self.U, self.V,self.item_biases])
             self.b = self.b.reshape(self.num_items)
 

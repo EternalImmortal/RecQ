@@ -1,6 +1,8 @@
 from baseclass.IterativeRecommender import IterativeRecommender
 from random import shuffle,randint,choice
 import tensorflow as tf
+# import tensorflow.compat.v1 as tf
+# tf.disable_v2_behavior()
 
 class DeepRecommender(IterativeRecommender):
     def __init__(self,conf,trainingSet,testSet,fold='[1]'):
@@ -44,7 +46,7 @@ class DeepRecommender(IterativeRecommender):
                 batch_id = self.train_size
 
             u_idx, i_idx, j_idx = [], [], []
-            item_list = self.data.item.keys()
+            item_list = list(self.data.item.keys())
             for i, user in enumerate(users):
 
                 i_idx.append(self.data.item[items[i]])
@@ -75,7 +77,7 @@ class DeepRecommender(IterativeRecommender):
                 y.append(1)
                 for instance in range(4):
                     item_j = randint(0, self.num_items - 1)
-                    while self.data.trainSet_u[user].has_key(self.data.id2item[item_j]):
+                    while self.data.id2item[item_j] in self.data.trainSet_u[user]:
                         item_j = randint(0, self.num_items - 1)
                     u_idx.append(self.data.user[user])
                     i_idx.append(item_j)

@@ -35,7 +35,7 @@ class AGR(SocialRecommender,DeepRecommender):
                 batch_id = self.train_size
 
             u_idx, i_idx, j_idx = [], [], []
-            item_list = self.data.item.keys()
+            item_list = list(self.data.item.keys())
             for i, user in enumerate(users):
 
                 i_idx.append(self.data.item[items[i]])
@@ -274,7 +274,7 @@ class AGR(SocialRecommender,DeepRecommender):
 
         init = tf.global_variables_initializer()
         self.sess.run(init)
-        print 'Training GAN...'
+        print('Training GAN...')
 
         for i in range(self.maxIter):
 
@@ -291,7 +291,7 @@ class AGR(SocialRecommender,DeepRecommender):
                                         feed_dict={self.u_idx: user_idx, self.neg_idx: j_idx,
                                                    self.v_idx: i_idx,self.isTraining:1})
 
-                print 'training:', i + 1, 'batch_id', num, 'discriminator loss:', loss
+                print('training:', i + 1, 'batch_id', num, 'discriminator loss:', loss)
 
     def predictForRanking(self, u):
         'invoked to rank all the items for the user'

@@ -268,7 +268,7 @@ class ESRF(SocialRecommender,DeepRecommender):
         self.listed_data = []
         for i in range(self.num_users):
             user = self.data.id2user[i]
-            items = self.data.trainSet_u[user].keys()
+            items = list(self.data.trainSet_u[user].keys())
             items = [self.data.item[item] for item in items]
             self.listed_data.append(items)
 
@@ -296,7 +296,7 @@ class ESRF(SocialRecommender,DeepRecommender):
         #     print 'training:', iteration + 1, 'loss:', l
 
         #conventional training
-        print 'pretraining...'
+        print('pretraining...')
         for iteration in range(self.maxIter/2):
             selectedItems = self.sampleItems()
             for n, batch in enumerate(self.next_batch_pairwise()):

@@ -28,11 +28,11 @@ class IF_BPR(SocialRecommender):
 
     def printAlgorConfig(self):
         super(IF_BPR, self).printAlgorConfig()
-        print 'Specified Arguments of', self.config['recommender'] + ':'
-        print 'Walks count per user', self.walkCount
-        print 'Length of each walk', self.walkLength
-        print 'Dimension of user embedding', self.walkDim
-        print '=' * 80
+        print('Specified Arguments of', self.config['recommender'] + ':')
+        print('Walks count per user', self.walkCount)
+        print('Length of each walk', self.walkLength)
+        print('Dimension of user embedding', self.walkDim)
+        print('=' * 80)
 
     def readNegativeFeedbacks(self):
         self.negative = defaultdict(list)
@@ -59,10 +59,10 @@ class IF_BPR(SocialRecommender):
         self.P = np.ones((len(self.data.user), self.embed_size))*0.1  # latent user matrix
         self.threshold = {}
         self.avg_sim = {}
-        self.thres_d = dict.fromkeys(self.data.user.keys(),0) #derivatives for learning thresholds
-        self.thres_count = dict.fromkeys(self.data.user.keys(),0)
+        self.thres_d = dict.fromkeys(list(self.data.user.keys()),0) #derivatives for learning thresholds
+        self.thres_count = dict.fromkeys(list(self.data.user.keys()),0)
 
-        print 'Preparing item sets...'
+        print('Preparing item sets...')
         self.PositiveSet = defaultdict(dict)
         self.NegSets = defaultdict(dict)
 
@@ -72,13 +72,13 @@ class IF_BPR(SocialRecommender):
 
         for user in self.data.user:
             for item in self.negative[user]:
-                if self.data.item.has_key(item):
+                if item in self.data.item:
                     self.NegSets[user][item] = 1
 
     def randomWalks(self):
-        print 'Kind Note: This method will probably take much time.'
+        print('Kind Note: This method will probably take much time.')
         # build U-F-NET
-        print 'Building weighted user-friend network...'
+        print('Building weighted user-friend network...')
         # filter isolated nodes and low ratings
         # Definition of Meta-Path
         p1 = 'UIU'
@@ -96,7 +96,7 @@ class IF_BPR(SocialRecommender):
             s1 = set(self.social.followees[u])
             for v in self.social.followees[u]:
                 if v in self.social.followees:  # make sure that v has out links
-                    if u <> v:
+                    if u != v:
                         s2 = set(self.social.followees[v])
                         weight = len(s1.intersection(s2))
                         self.UFNet[u] += [v] * (weight + 1)
@@ -105,13 +105,13 @@ class IF_BPR(SocialRecommender):
         for u in self.social.followers:
             s1 = set(self.social.followers[u])
             for v in self.social.followers[u]:
-                if self.social.followers.has_key(v):  # make sure that v has out links
-                    if u <> v:
+                if v in self.social.followers:  # make sure that v has out links
+                    if u != v:
                         s2 = set(self.social.followers[v])
                         weight = len(s1.intersection(s2))
                         self.UTNet[u] += [v] * (weight + 1)
 
-        print 'Generating random meta-path random walks... (Positive)'
+        print('Generating random meta-path random walks... (Positive)')
         self.pWalks = []
         # self.usercovered = {}
 
@@ -144,21 +144,21 @@ class IF_BPR(SocialRecommender):
                                         nextNode = choice(self.pItems[lastNode])
                                     elif lastType == 'F':
                                         nextNode = choice(self.UFNet[lastNode])
-                                        while not self.data.user.has_key(nextNode):
+                                        while nextNode not in self.data.user:
                                             nextNode = choice(self.UFNet[lastNode])
                                     elif lastType == 'T':
                                         nextNode = choice(self.UTNet[lastNode])
-                                        while not self.data.user.has_key(nextNode):
+                                        while nextNode not in self.data.user:
                                             nextNode = choice(self.UTNet[lastNode])
 
                                 if tp == 'F':
                                     nextNode = choice(self.UFNet[lastNode])
-                                    while not self.data.user.has_key(nextNode):
+                                    while nextNode not in self.data.user:
                                         nextNode = choice(self.UFNet[lastNode])
 
                                 if tp == 'T':
                                     nextNode = choice(self.UTNet[lastNode])
-                                    while not self.data.user.has_key(nextNode):
+                                    while nextNode not in self.data.user:
                                         nextNode = choice(self.UTNet[lastNode])
 
                                 path.append(tp + nextNode)
@@ -204,21 +204,21 @@ class IF_BPR(SocialRecommender):
                                         nextNode = choice(self.nItems[lastNode])
                                     elif lastType == 'F':
                                         nextNode = choice(self.UFNet[lastNode])
-                                        while not self.data.user.has_key(nextNode):
+                                        while nextNode not in self.data.user:
                                             nextNode = choice(self.UFNet[lastNode])
                                     elif lastType == 'T':
                                         nextNode = choice(self.UTNet[lastNode])
-                                        while not self.data.user.has_key(nextNode):
+                                        while nextNode not in self.data.user:
                                             nextNode = choice(self.UTNet[lastNode])
 
                                 if tp == 'F':
                                     nextNode = choice(self.UFNet[lastNode])
-                                    while not self.data.user.has_key(nextNode):
+                                    while nextNode not in self.data.user:
                                         nextNode = choice(self.UFNet[lastNode])
 
                                 if tp == 'T':
                                     nextNode = choice(self.UTNet[lastNode])
-                                    while not self.data.user.has_key(nextNode):
+                                    while nextNode not in self.data.user:
                                         nextNode = choice(self.UTNet[lastNode])
 
                                 path.append(tp + nextNode)
@@ -233,12 +233,12 @@ class IF_BPR(SocialRecommender):
                         self.nWalks.append(path)
 
         shuffle(self.pWalks)
-        print 'pwalks:', len(self.pWalks)
-        print 'nwalks:', len(self.nWalks)
+        print('pwalks:', len(self.pWalks))
+        print('nwalks:', len(self.nWalks))
 
     def computeSimilarity(self):
         # Training get top-k friends
-        print 'Generating user embedding...'
+        print('Generating user embedding...')
         self.pTopKSim = {}
         self.nTopKSim = {}
         self.pSimilarity = defaultdict(dict)
@@ -257,18 +257,18 @@ class IF_BPR(SocialRecommender):
                 self.G[uid] = neg_model.wv['U' + user]
             except KeyError:
                 continue
-        print 'User embedding generated.'
+        print('User embedding generated.')
 
-        print 'Constructing similarity matrix...'
+        print('Constructing similarity matrix...')
         i = 0
         for user1 in self.positive:
             uSim = []
             i += 1
             if i % 200 == 0:
-                print i, '/', len(self.positive)
+                print(i, '/', len(self.positive))
             vec1 = self.W[self.data.user[user1]]
             for user2 in self.positive:
-                if user1 <> user2:
+                if user1 != user2:
                     vec2 = self.W[self.data.user[user2]]
                     sim = cosine(vec1, vec2)
                     uSim.append((user2, sim))
@@ -284,10 +284,10 @@ class IF_BPR(SocialRecommender):
             uSim = []
             i += 1
             if i % 200 == 0:
-                print i, '/', len(self.negative)
+                print(i, '/', len(self.negative))
             vec1 = self.G[self.data.user[user1]]
             for user2 in self.negative:
-                if user1 <> user2:
+                if user1 != user2:
                     vec2 = self.G[self.data.user[user2]]
                     sim = cosine(vec1, vec2)
                     uSim.append((user2, sim))
@@ -313,7 +313,7 @@ class IF_BPR(SocialRecommender):
                             if item not in self.PositiveSet[user] and item not in self.NegSets[user]:
                                 self.JointSet[user][item] = friend
 
-            if self.pTopKSim.has_key(user):
+            if user in self.pTopKSim:
                 for friend in self.pTopKSim[user][:self.topK]:
                     if friend in self.data.user and self.pSimilarity[user][friend] >= self.threshold[user]:
                         for item in self.positive[friend]:
@@ -321,7 +321,7 @@ class IF_BPR(SocialRecommender):
                                     and item not in self.NegSets[user]:
                                 self.PS_Set[user][item] = friend
 
-            if self.nTopKSim.has_key(user):
+            if user in self.nTopKSim:
                 for friend in self.nTopKSim[user][:self.topK]:
                     if friend in self.data.user and self.nSimilarity[user][friend]>=self.threshold[user]:
                         for item in self.negative[friend]:
@@ -335,17 +335,17 @@ class IF_BPR(SocialRecommender):
         self.randomWalks()
         self.computeSimilarity()
 
-        print 'Decomposing...'
+        print('Decomposing...')
         iteration = 0
         while iteration < self.maxIter:
             self.loss = 0
             self.updateSets()
-            itemList = self.data.item.keys()
+            itemList = list(self.data.item.keys())
             for user in self.PositiveSet:
                 #itemList = self.NegSets[user].keys()
-                kItems = self.JointSet[user].keys()
-                pItems = self.PS_Set[user].keys()
-                nItems = self.NegSets[user].keys()
+                kItems = list(self.JointSet[user].keys())
+                pItems = list(self.PS_Set[user].keys())
+                nItems = list(self.NegSets[user].keys())
 
                 u = self.data.user[user]
 
@@ -385,7 +385,7 @@ class IF_BPR(SocialRecommender):
                     self.threshold[user] -= self.lRate * self.thres_d[user] / self.thres_count[user]
                     self.thres_d[user]=0
                     self.thres_count[user]=0
-                    li = [sim for sim in self.pSimilarity[user].values() if sim>=self.threshold[user]]
+                    li = [sim for sim in list(self.pSimilarity[user].values()) if sim>=self.threshold[user]]
                     if len(li)==0:
                         self.avg_sim[user] = self.threshold[user]
                     else:
@@ -401,7 +401,7 @@ class IF_BPR(SocialRecommender):
             iteration += 1
             if self.isConverged(iteration):
                  break
-            print self.foldInfo,'iteration:',iteration
+            print(self.foldInfo,'iteration:',iteration)
         self.ranking_performance()
 
 
@@ -420,9 +420,9 @@ class IF_BPR(SocialRecommender):
         try:
             g_theta = sigmoid((self.pSimilarity[user][friend]-self.threshold[user])/(self.avg_sim[user]-self.threshold[user]))
         except OverflowError:
-            print 'threshold',self.threshold[user],'smilarity',self.pSimilarity[user][friend],'avg',self.avg_sim[user]
-            print (self.pSimilarity[user][friend]-self.threshold[user]),(self.avg_sim[user]-self.threshold[user])
-            print (self.pSimilarity[user][friend]-self.threshold[user])/(self.avg_sim[user]-self.threshold[user])
+            print('threshold',self.threshold[user],'smilarity',self.pSimilarity[user][friend],'avg',self.avg_sim[user])
+            print((self.pSimilarity[user][friend]-self.threshold[user]),(self.avg_sim[user]-self.threshold[user]))
+            print((self.pSimilarity[user][friend]-self.threshold[user])/(self.avg_sim[user]-self.threshold[user]))
             exit(-1)
         #print 'g_theta',g_theta
 

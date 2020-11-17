@@ -22,11 +22,11 @@ class TBPR(SocialRecommender):
         self.strongTies = defaultdict(dict)
         self.weights = []
         for u1 in self.social.user:
-            N_u1 = self.social.getFollowees(u1).keys()
+            N_u1 = list(self.social.getFollowees(u1).keys())
             for u2 in self.social.getFollowees(u1):
                 if u1==u2:
                     continue
-                N_u2 = self.social.getFollowees(u2).keys()
+                N_u2 = list(self.social.getFollowees(u2).keys())
                 s = len(set(N_u1).intersection(set(N_u2)))/(len(set(N_u1).union(set(N_u2)))+0.0)
                 self.strength[u1][u2]=s
                 self.weights.append(s)
@@ -82,7 +82,7 @@ class TBPR(SocialRecommender):
                 if self.data.trainSet_u[user][item] >= 1:
                     self.positiveSet[user][item] = 1
 
-        print 'Training...'
+        print('Training...')
         iteration = 0
         while iteration < self.maxIter:
             self.theta_derivative=0
@@ -101,28 +101,28 @@ class TBPR(SocialRecommender):
             # if self.theta==0:
             #     self.theta=0.02
             self.g_theta = (self.t_s-self.theta)*(self.theta-self.t_w)
-            print 'Theta:',self.theta
-            print 'g_theta:',self.g_theta
-            print 'Preparing item sets...'
+            print('Theta:',self.theta)
+            print('g_theta:',self.g_theta)
+            print('Preparing item sets...')
 
             self.jointSet = defaultdict(dict)
             self.strongSet = defaultdict(dict)
             self.weakSet = defaultdict(dict)
 
             for u1 in self.social.user:
-                if self.data.user.has_key(u1):
+                if u1 in self.data.user:
                     for u2 in self.strongTies[u1]:
                         for item in self.data.trainSet_u[u2]:
-                            if self.data.trainSet_u[u2][item] >= 1 and not self.positiveSet[u1].has_key(item):
+                            if self.data.trainSet_u[u2][item] >= 1 and item not in self.positiveSet[u1]:
                                 self.strongSet[u1][item]=1
 
                     for u2 in self.weakTies[u1]:
                         for item in self.data.trainSet_u[u2]:
-                            if self.data.trainSet_u[u2][item] >= 1 and not self.positiveSet[u1].has_key(item):
+                            if self.data.trainSet_u[u2][item] >= 1 and item not in self.positiveSet[u1]:
                                 self.weakSet[u1][item]=1
 
             for u1 in self.social.user:
-                if self.data.user.has_key(u1):
+                if u1 in self.data.user:
                     self.jointSet[u1] = dict.fromkeys(set(self.strongSet[u1].keys()).intersection(set(self.weakSet[u1].keys())),1)
 
             for u1 in self.jointSet:
@@ -134,15 +134,15 @@ class TBPR(SocialRecommender):
                     if len(self.weakSet[u1])==0:
                         del self.weakSet[u1]
 
-            print 'Computing...'
+            print('Computing...')
             self.loss = 0
-            itemList = self.data.item.keys()
+            itemList = list(self.data.item.keys())
             for user in self.positiveSet:
                 #print user
                 u = self.data.user[user]
-                jItems = self.jointSet[user].keys()
-                wItems = self.weakSet[user].keys()
-                sItems = self.strongSet[user].keys()
+                jItems = list(self.jointSet[user].keys())
+                wItems = list(self.weakSet[user].keys())
+                sItems = list(self.strongSet[user].keys())
                 for item in self.positiveSet[user]:
                     i = self.data.item[item]
                     selectedItems = [i]
@@ -163,7 +163,7 @@ class TBPR(SocialRecommender):
                         selectedItems.append(s)
 
                     item_k = choice(itemList)
-                    while (self.positiveSet[user].has_key(item_k)):
+                    while (item_k in self.positiveSet[user]):
                         item_k = choice(itemList)
                     k = self.data.item[item_k]
                     selectedItems.append(k)

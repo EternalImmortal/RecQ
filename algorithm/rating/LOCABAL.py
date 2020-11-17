@@ -16,9 +16,9 @@ class LOCABAL(SocialRecommender):
 
     def printAlgorConfig(self):
         super(LOCABAL, self).printAlgorConfig()
-        print 'Specified Arguments of',self.config['recommender']+':'
-        print 'alpha: %.3f' %self.alpha
-        print '='*80
+        print('Specified Arguments of',self.config['recommender']+':')
+        print('alpha: %.3f' %self.alpha)
+        print('='*80)
 
     def initModel(self):
         super(LOCABAL, self).initModel()
@@ -27,7 +27,7 @@ class LOCABAL(SocialRecommender):
         for re in self.social.relation:
             G.add_edge(re[0], re[1])
         pr = nx.pagerank(G, alpha=0.85)
-        pr = sorted(pr.iteritems(),key=lambda d:d[1],reverse=True)
+        pr = sorted(iter(pr.items()),key=lambda d:d[1],reverse=True)
         pr = [(u[0],ind+1) for ind,u in enumerate(pr)]
         self.W = {}
         for user in pr:
@@ -39,7 +39,7 @@ class LOCABAL(SocialRecommender):
                 uvec1=self.data.trainSet_u[u1]
                 uvec2=self.data.trainSet_u[u2]
             #add relations to dict
-                if not self.S.has_key(u1):
+                if u1 not in self.S:
                     self.S[u1] = {}
                 self.S[u1][u2] = qmath.cosine_sp(uvec1,uvec2)
 
@@ -52,14 +52,14 @@ class LOCABAL(SocialRecommender):
                 error = r - self.predict(user,item)
                 i = self.data.getItemId(item)
                 u = self.data.getUserId(user)
-                if self.W.has_key(user):
+                if user in self.W:
                     self.loss += self.W[user]*error ** 2
                 else:
                     self.loss += error ** 2
                 p = self.P[u].copy()
                 q = self.Q[i].copy()
                 #update latent vectors
-                if self.W.has_key(user):
+                if user in self.W:
                     self.P[u] += self.lRate * (self.W[user]*error * q - self.regU * p)
                     self.Q[i] += self.lRate * (self.W[user]*error * p - self.regI * q)
                 #else:

@@ -113,10 +113,10 @@ class RatingDAO(object):
             return False
 
     def userRated(self,u):
-        return self.trainSet_u[u].keys(),self.trainSet_u[u].values()
+        return list(self.trainSet_u[u].keys()),list(self.trainSet_u[u].values())
 
     def itemRated(self,i):
-        return self.trainSet_i[i].keys(),self.trainSet_i[i].values()
+        return list(self.trainSet_i[i].keys()),list(self.trainSet_i[i].values())
 
     def row(self,u):
         k,v = self.userRated(u)
