@@ -45,10 +45,8 @@ class RSGAN(SocialRecommender,DeepRecommender):
                 self.positive[user].append(item)
                 self.pItems[item].append(user)
 
-        print('Kind Note: This method will probably take much time.')
         # build U-F-NET
-        print('Building weighted user-friend network...')
-        # filter isolated nodes and low ratings
+        print 'Building weighted user-friend network...'
         # Definition of Meta-Path
         p1 = 'UIU'
         p2 = 'UFU'
@@ -57,7 +55,7 @@ class RSGAN(SocialRecommender,DeepRecommender):
         p5 = 'UFUIU'
         mPaths = [p1, p2, p3, p4, p5]
 
-        self.walkLength=30
+        self.walkLength=20
         self.topK = 100
 
         self.G = np.random.rand(self.num_users, 50) * 0.1
@@ -68,7 +66,7 @@ class RSGAN(SocialRecommender,DeepRecommender):
             s1 = set(self.social.followees[u])
             for v in self.social.followees[u]:
                 if v in self.social.followees:  # make sure that v has out links
-                    if u != v:
+                    if u <> v:
                         s2 = set(self.social.followees[v])
                         weight = len(s1.intersection(s2))
                         self.UFNet[u] += [v] * (weight + 1)
@@ -77,13 +75,13 @@ class RSGAN(SocialRecommender,DeepRecommender):
         for u in self.social.followers:
             s1 = set(self.social.followers[u])
             for v in self.social.followers[u]:
-                if v in self.social.followers:  # make sure that v has out links
-                    if u != v:
+                if self.social.followers.has_key(v):  # make sure that v has out links
+                    if u <> v:
                         s2 = set(self.social.followers[v])
                         weight = len(s1.intersection(s2))
                         self.UTNet[u] += [v] * (weight + 1)
 
-        print('Generating random meta-path random walks... (Positive)')
+        print 'Generating random meta-path random walks... (Positive)'
         self.pWalks = []
         # self.usercovered = {}
 
@@ -117,21 +115,21 @@ class RSGAN(SocialRecommender,DeepRecommender):
                                         nextNode = choice(self.pItems[lastNode])
                                     elif lastType == 'F':
                                         nextNode = choice(self.UFNet[lastNode])
-                                        while nextNode not in self.data.user:
+                                        while not self.data.user.has_key(nextNode):
                                             nextNode = choice(self.UFNet[lastNode])
                                     elif lastType == 'T':
                                         nextNode = choice(self.UTNet[lastNode])
-                                        while nextNode not in self.data.user:
+                                        while not self.data.user.has_key(nextNode):
                                             nextNode = choice(self.UTNet[lastNode])
 
                                 if tp == 'F':
                                     nextNode = choice(self.UFNet[lastNode])
-                                    while nextNode not in self.data.user:
+                                    while not self.data.user.has_key(nextNode):
                                         nextNode = choice(self.UFNet[lastNode])
 
                                 if tp == 'T':
                                     nextNode = choice(self.UFNet[lastNode])
-                                    while nextNode not in self.data.user:
+                                    while not self.data.user.has_key(nextNode):
                                         nextNode = choice(self.UFNet[lastNode])
 
                                 path.append(tp + nextNode)
@@ -177,21 +175,21 @@ class RSGAN(SocialRecommender,DeepRecommender):
                                         nextNode = choice(self.nItems[lastNode])
                                     elif lastType == 'F':
                                         nextNode = choice(self.UFNet[lastNode])
-                                        while nextNode not in self.data.user:
+                                        while not self.data.user.has_key(nextNode):
                                             nextNode = choice(self.UFNet[lastNode])
                                     elif lastType == 'T':
                                         nextNode = choice(self.UTNet[lastNode])
-                                        while nextNode not in self.data.user:
+                                        while not self.data.user.has_key(nextNode):
                                             nextNode = choice(self.UTNet[lastNode])
 
                                 if tp == 'F':
                                     nextNode = choice(self.UFNet[lastNode])
-                                    while nextNode not in self.data.user:
+                                    while not self.data.user.has_key(nextNode):
                                         nextNode = choice(self.UFNet[lastNode])
 
                                 if tp == 'T':
                                     nextNode = choice(self.UFNet[lastNode])
-                                    while nextNode not in self.data.user:
+                                    while not self.data.user.has_key(nextNode):
                                         nextNode = choice(self.UFNet[lastNode])
 
                                 path.append(tp + nextNode)
@@ -206,12 +204,12 @@ class RSGAN(SocialRecommender,DeepRecommender):
                         self.nWalks.append(path)
 
         shuffle(self.pWalks)
-        print('pwalks:', len(self.pWalks))
-        print('nwalks:', len(self.nWalks))
+        print 'pwalks:', len(self.pWalks)
+        print 'nwalks:', len(self.nWalks)
 
     def computeSimilarity(self):
         # Training get top-k friends
-        print('Generating user embedding...')
+        print 'Generating user embedding...'
         self.pTopKSim = {}
         self.nTopKSim = {}
         self.pSimilarity = defaultdict(dict)
@@ -230,18 +228,18 @@ class RSGAN(SocialRecommender,DeepRecommender):
                 self.G[uid] = neg_model.wv['U' + user]
             except KeyError:
                 continue
-        print('User embedding generated.')
+        print 'User embedding generated.'
 
-        print('Constructing similarity matrix...')
+        print 'Constructing similarity matrix...'
         i = 0
         for user1 in self.positive:
             uSim = []
             i += 1
             if i % 200 == 0:
-                print(i, '/', len(self.positive))
+                print i, '/', len(self.positive)
             vec1 = self.W[self.data.user[user1]]
             for user2 in self.positive:
-                if user1 != user2:
+                if user1 <> user2:
                     vec2 = self.W[self.data.user[user2]]
                     sim = cosine(vec1, vec2)
                     uSim.append((user2, sim))
@@ -255,10 +253,10 @@ class RSGAN(SocialRecommender,DeepRecommender):
             uSim = []
             i += 1
             if i % 200 == 0:
-                print(i, '/', len(self.negative))
+                print i, '/', len(self.negative)
             vec1 = self.G[self.data.user[user1]]
             for user2 in self.negative:
-                if user1 != user2:
+                if user1 <> user2:
                     vec2 = self.G[self.data.user[user2]]
                     sim = cosine(vec1, vec2)
                     uSim.append((user2, sim))
@@ -271,11 +269,11 @@ class RSGAN(SocialRecommender,DeepRecommender):
         self.firend_item_set = defaultdict(list)
         for user in self.pTopKSim:
             trueFriends = list(set(self.pTopKSim[user]).intersection(set(self.nTopKSim[user])))
-            self.seededFriends[user] = trueFriends+self.pTopKSim[user][:50]
+            self.seededFriends[user] = trueFriends+self.pTopKSim[user][:30]
 
         for user in self.pTopKSim:
             for friend in self.seededFriends[user]:
-                self.firend_item_set[user]+=list(self.data.trainSet_u[friend].keys())
+                self.firend_item_set[user]+=self.data.trainSet_u[friend].keys()
 
     def sampling(self,vec):
         vec = tf.nn.softmax(vec)
@@ -376,7 +374,7 @@ class RSGAN(SocialRecommender,DeepRecommender):
         self.g_update = g_opt.minimize(self.g_loss,var_list=self.g_params)
 
     def next_batch_g(self):
-        userList = list(self.data.user.keys())
+        userList = self.data.user.keys()
         batch_id=0
         while batch_id<self.num_users:
             if batch_id + self.batch_size <= self.num_users:
@@ -414,15 +412,15 @@ class RSGAN(SocialRecommender,DeepRecommender):
         self.sess.run(init)
         # pretraining
 
-        print('pretraining for generator...')
+        print 'pretraining for generator...'
         for i in range(30):
             for num,batch in enumerate(self.next_batch_g()):
                 profiles,uid = batch
                 _,loss = self.sess.run([self.g_pretrain,self.reconstruction],feed_dict={self.X:profiles,self.u_idx:uid})
-                print('pretraining:', i + 1, 'batch',num,'generator loss:', loss)
+                print 'pretraining:', i + 1, 'batch',num,'generator loss:', loss
 
 
-        print('Training GAN...')
+        print 'Training GAN...'
         for i in range(self.maxIter):
             for num,batch in enumerate(self.next_batch_pairwise()):
                 user_idx, i_idx, j_idx = batch
@@ -439,7 +437,7 @@ class RSGAN(SocialRecommender,DeepRecommender):
                 _, loss = self.sess.run([self.d_update, self.d_loss],
                                         feed_dict={self.u_idx: user_idx,self.neg:j_idx,self.pos: i_idx,self.X:profiles})
 
-                print('training:', i + 1, 'batch_id', num, 'discriminator loss:', loss)
+                print 'training:', i + 1, 'batch_id', num, 'discriminator loss:', loss
 
 
     def predictForRanking(self, u):
@@ -447,7 +445,7 @@ class RSGAN(SocialRecommender,DeepRecommender):
         if self.data.containsUser(u):
             u = self.data.user[u]
             # In our experiments, discriminator performs better than generator
-            res = self.sess.run(self.d_output, {self.u_idx:u})
+            res = self.sess.run(self.d_output, {self.u_idx:[u]})
             return res
 
         else:
