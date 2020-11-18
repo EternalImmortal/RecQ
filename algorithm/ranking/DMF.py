@@ -119,7 +119,7 @@ class DMF(DeepRecommender):
                 v_idx = v_idx[shuffle_idx]
 
                 _,loss= self.sess.run([optimizer, self.loss], feed_dict={self.input_u: users,self.input_i:items,self.r:ratings})
-                print(self.foldInfo, "Epoch:", '%04d' % (epoch + 1), "Batch:", '%03d' % (i + 1), "loss=", "{:.9f}".format(loss))
+                print((self.foldInfo, "Epoch:", '%04d' % (epoch + 1), "Batch:", '%03d' % (i + 1), "loss=", "{:.9f}".format(loss)))
             #save the output layer
 
                 U_embedding, V_embedding = self.sess.run([self.user_out, self.item_out], feed_dict={self.input_u: users,self.input_i:items})

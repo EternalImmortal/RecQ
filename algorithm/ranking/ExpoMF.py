@@ -49,7 +49,7 @@ class ExpoMF(IterativeRecommender):
         n_users = self.X.shape[0]
         XT = self.X.T.tocsr()  # pre-compute this
         for i in range(self.maxIter):
-            print('ITERATION #%d' % i)
+            print(('ITERATION #%d' % i))
             self._update_factors(self.X, XT)
             self._update_expo(self.X, n_users)
 
@@ -82,7 +82,7 @@ class ExpoMF(IterativeRecommender):
         for lo, hi in zip(start_idx, end_idx):
             A_sum += a_row_batch(X[lo:hi], self.theta[lo:hi], self.beta,
                                  self.lam_y, self.mu).sum(axis=0)
-        print(self.mu)
+        print((self.mu))
         self.mu = (self.a + A_sum - 1) / (self.a + self.b + n_users - 2)
 
 

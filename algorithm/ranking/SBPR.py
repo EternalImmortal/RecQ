@@ -161,7 +161,7 @@ class SBPR(SocialRecommender):
                     user_idx, i_idx, s_idx,j_idx,weights = batch
                     _, l = sess.run([train, loss],
                                     feed_dict={self.u_idx: user_idx, self.neg_idx: j_idx, self.v_idx: i_idx,self.social_idx:s_idx,self.weights:weights})
-                    print('training:', iteration + 1, 'batch', n, 'loss:', l)
+                    print(('training:', iteration + 1, 'batch', n, 'loss:', l))
             self.P, self.Q,self.b = sess.run([self.U, self.V,self.item_biases])
             self.b = self.b.reshape(self.num_items)
 

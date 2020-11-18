@@ -49,7 +49,7 @@ class FileIO(object):
         for lineNo, line in enumerate(ratings):
             items = split(delim,line.strip())
             if not bTest and len(order) < 2:
-                print('The rating file is not in a correct format. Error: Line num %d' % lineNo)
+                print(('The rating file is not in a correct format. Error: Line num %d' % lineNo))
                 exit(-1)
             try:
                 userId = items[int(order[0])]
@@ -97,7 +97,7 @@ class FileIO(object):
         for lineNo, line in enumerate(relations):
             items = split(' |,|\t', line.strip())
             if len(order) < 2:
-                print('The social file is not in a correct format. Error: Line num %d' % lineNo)
+                print(('The social file is not in a correct format. Error: Line num %d' % lineNo))
                 exit(-1)
             userId1 = items[int(order[0])]
             userId2 = items[int(order[1])]

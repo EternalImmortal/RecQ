@@ -8,12 +8,14 @@
 # (at your option) any later version.
 from data.rating import RatingDAO
 from tool.file import FileIO
-from tool.config import Config,LineConfig
+from tool.config import Config, LineConfig
 from os.path import abspath
-from time import strftime,localtime,time
+from time import strftime, localtime, time
 from evaluation.measure import Measure
+
+
 class Recommender(object):
-    def __init__(self,conf,trainingSet,testSet,fold='[1]'):
+    def __init__(self, conf, trainingSet, testSet, fold='[1]'):
         self.config = conf
         self.data = None
         self.isSaveModel = False
@@ -27,12 +29,12 @@ class Recommender(object):
         self.measure = []
         self.record = []
         if self.evalSettings.contains('-cold'):
-            #evaluation on cold-start users
+            # evaluation on cold-start users
             threshold = int(self.evalSettings['-cold'])
             removedUser = {}
             for user in self.data.testSet_u:
-                if user in self.data.trainSet_u and len(self.data.trainSet_u[user])>threshold:
-                    removedUser[user]=1
+                if user in self.data.trainSet_u and len(self.data.trainSet_u[user]) > threshold:
+                    removedUser[user] = 1
 
             for user in removedUser:
                 del self.data.testSet_u[user]
@@ -45,7 +47,6 @@ class Recommender(object):
 
         self.num_users, self.num_items, self.train_size = self.data.trainingSize()
 
-
     def readConfiguration(self):
         self.algorName = self.config['recommender']
         self.output = LineConfig(self.config['output.setup'])
@@ -54,14 +55,14 @@ class Recommender(object):
 
     def printAlgorConfig(self):
         "show algorithm's configuration"
-        print('Algorithm:',self.config['recommender'])
-        print('Ratings dataset:',abspath(self.config['ratings']))
+        print(('Algorithm:', self.config['recommender']))
+        print(('Ratings dataset:', abspath(self.config['ratings'])))
         if LineConfig(self.config['evaluation.setup']).contains('-testSet'):
-            print('Test set:',abspath(LineConfig(self.config['evaluation.setup']).getOption('-testSet')))
-        #print 'Count of the users in training set: ',len()
-        print('Training set size: (user count: %d, item count %d, record count: %d)' %(self.data.trainingSize()))
-        print('Test set size: (user count: %d, item count %d, record count: %d)' %(self.data.testSize()))
-        print('='*80)
+            print(('Test set:', abspath(LineConfig(self.config['evaluation.setup']).getOption('-testSet'))))
+        # print 'Count of the users in training set: ',len()
+        print(('Training set size: (user count: %d, item count %d, record count: %d)' % (self.data.trainingSize())))
+        print(('Test set size: (user count: %d, item count %d, record count: %d)' % (self.data.testSize())))
+        print(('=' * 80))
 
     def initModel(self):
         pass
@@ -80,50 +81,49 @@ class Recommender(object):
     def loadModel(self):
         pass
 
-    def predict(self,u,i):
+    def predict(self, u, i):
         pass
 
-    def predictForRanking(self,u):
+    def predictForRanking(self, u):
         pass
 
-
-    def checkRatingBoundary(self,prediction):
+    def checkRatingBoundary(self, prediction):
         if prediction > self.data.rScale[-1]:
             return self.data.rScale[-1]
         elif prediction < self.data.rScale[0]:
             return self.data.rScale[0]
         else:
-            return round(prediction,3)
+            return round(prediction, 3)
 
     def evalRatings(self):
-        res = list() #used to contain the text of the result
+        res = list()  # used to contain the text of the result
         res.append('userId  itemId  original  prediction\n')
-        #predict
-        for ind,entry in enumerate(self.data.testData):
-            user,item,rating = entry
+        # predict
+        for ind, entry in enumerate(self.data.testData):
+            user, item, rating = entry
 
-            #predict
-            prediction = self.predict(user,item)
-            #denormalize
-            #prediction = denormalize(prediction,self.data.rScale[-1],self.data.rScale[0])
+            # predict
+            prediction = self.predict(user, item)
+            # denormalize
+            # prediction = denormalize(prediction,self.data.rScale[-1],self.data.rScale[0])
             #####################################
             pred = self.checkRatingBoundary(prediction)
             # add prediction in order to measure
             self.data.testData[ind].append(pred)
-            res.append(user+' '+item+' '+str(rating)+' '+str(pred)+'\n')
-        currentTime = strftime("%Y-%m-%d %H-%M-%S",localtime(time()))
-        #output prediction result
+            res.append(user + ' ' + item + ' ' + str(rating) + ' ' + str(pred) + '\n')
+        currentTime = strftime("%Y-%m-%d %H-%M-%S", localtime(time()))
+        # output prediction result
         if self.isOutput:
             outDir = self.output['-dir']
-            fileName = self.config['recommender']+'@'+currentTime+'-rating-predictions'+self.foldInfo+'.txt'
-            FileIO.writeFile(outDir,fileName,res)
-            print('The result has been output to ',abspath(outDir),'.')
-        #output evaluation result
+            fileName = self.config['recommender'] + '@' + currentTime + '-rating-predictions' + self.foldInfo + '.txt'
+            FileIO.writeFile(outDir, fileName, res)
+            print(('The result has been output to ', abspath(outDir), '.'))
+        # output evaluation result
         outDir = self.output['-dir']
-        fileName = self.config['recommender'] + '@'+currentTime +'-measure'+ self.foldInfo + '.txt'
+        fileName = self.config['recommender'] + '@' + currentTime + '-measure' + self.foldInfo + '.txt'
         self.measure = Measure.ratingMeasure(self.data.testData)
         FileIO.writeFile(outDir, fileName, self.measure)
-        print('The result of %s %s:\n%s' % (self.algorName, self.foldInfo, ''.join(self.measure)))
+        print(('The result of %s %s:\n%s' % (self.algorName, self.foldInfo, ''.join(self.measure))))
 
     def evalRanking(self):
         res = []  # used to contain the text of the result
@@ -146,7 +146,7 @@ class Recommender(object):
         recList = {}
         userN = {}
         userCount = len(self.data.testSet_u)
-        #rawRes = {}
+        # rawRes = {}
         for i, user in enumerate(self.data.testSet_u):
             itemSet = {}
             line = user + ':'
@@ -176,7 +176,6 @@ class Recommender(object):
             recommendations = [item[1] for item in Nrecommendations]
             resNames = [item[0] for item in Nrecommendations]
 
-
             # find the N biggest scores
             for item in itemSet:
                 ind = N
@@ -184,8 +183,8 @@ class Recommender(object):
                 r = N - 1
 
                 if recommendations[r] < itemSet[item]:
-                    while r>=l:
-                        mid = (r-l) / 2 + l
+                    while r >= l:
+                        mid = int((r - l) / 2 + l)
                         if recommendations[mid] >= itemSet[item]:
                             l = mid + 1
                         elif recommendations[mid] < itemSet[item]:
@@ -194,19 +193,18 @@ class Recommender(object):
                         if r < l:
                             ind = r
                             break
-                #move the items backwards
+                # move the items backwards
                 if ind < N - 2:
-                    recommendations[ind+2:]=recommendations[ind+1:-1]
-                    resNames[ind+2:]=resNames[ind+1:-1]
+                    recommendations[ind + 2:] = recommendations[ind + 1:-1]
+                    resNames[ind + 2:] = resNames[ind + 1:-1]
                 if ind < N - 1:
-                    recommendations[ind+1] = itemSet[item]
-                    resNames[ind+1] = item
+                    recommendations[ind + 1] = itemSet[item]
+                    resNames[ind + 1] = item
 
             recList[user] = list(zip(resNames, recommendations))
 
-
             if i % 100 == 0:
-                print(self.algorName, self.foldInfo, 'progress:' + str(i) + '/' + str(userCount))
+                print((self.algorName, self.foldInfo, 'progress:' + str(i) + '/' + str(userCount)))
             for item in recList[user]:
                 line += ' (' + item[0] + ',' + str(item[1]) + ')'
                 if item[0] in self.data.testSet_u[user]:
@@ -220,28 +218,28 @@ class Recommender(object):
             fileName = ''
             outDir = self.output['-dir']
             fileName = self.config['recommender'] + '@' + currentTime + '-top-' + str(
-            N) + 'items' + self.foldInfo + '.txt'
+                N) + 'items' + self.foldInfo + '.txt'
             FileIO.writeFile(outDir, fileName, res)
-            print('The result has been output to ', abspath(outDir), '.')
+            print(('The result has been output to ', abspath(outDir), '.'))
         # output evaluation result
         outDir = self.output['-dir']
         fileName = self.config['recommender'] + '@' + currentTime + '-measure' + self.foldInfo + '.txt'
         self.measure = Measure.rankingMeasure(self.data.testSet_u, recList, top)
         FileIO.writeFile(outDir, fileName, self.measure)
-        print('The result of %s %s:\n%s' % (self.algorName, self.foldInfo, ''.join(self.measure)))
+        print(('The result of %s %s:\n%s' % (self.algorName, self.foldInfo, ''.join(self.measure))))
 
     def execute(self):
         self.readConfiguration()
         if self.foldInfo == '[1]':
             self.printAlgorConfig()
-        #load model from disk or build model
+        # load model from disk or build model
         if self.isLoadModel:
-            print('Loading model %s...' %self.foldInfo)
+            print(('Loading model %s...' % self.foldInfo))
             self.loadModel()
         else:
-            print('Initializing model %s...' %self.foldInfo)
+            print(('Initializing model %s...' % self.foldInfo))
             self.initModel()
-            print('Building Model %s...' %self.foldInfo)
+            print(('Building Model %s...' % self.foldInfo))
             try:
                 import tensorflow
                 if self.evalSettings.contains('-tf'):
@@ -251,20 +249,17 @@ class Recommender(object):
             except ImportError:
                 self.buildModel()
 
-        #preict the ratings or item ranking
-        print('Predicting %s...' %self.foldInfo)
+        # preict the ratings or item ranking
+        print(('Predicting %s...' % self.foldInfo))
         if self.ranking.isMainOn():
             self.evalRanking()
         else:
             self.evalRatings()
 
-        #save model
+        # save model
         if self.isSaveModel:
-            print('Saving model %s...' %self.foldInfo)
+            print(('Saving model %s...' % self.foldInfo))
             self.saveModel()
         # with open(self.foldInfo+'measure.txt','w') as f:
         #     f.writelines(self.record)
         return self.measure
-
-
-

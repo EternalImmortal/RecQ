@@ -16,10 +16,10 @@ class UserKNN(Recommender):
     def printAlgorConfig(self):
         "show algorithm's configuration"
         super(UserKNN, self).printAlgorConfig()
-        print('Specified Arguments of',self.config['recommender']+':')
-        print('num.neighbors:',self.config['num.neighbors'])
-        print('similarity:', self.config['similarity'])
-        print('='*80)
+        print(('Specified Arguments of',self.config['recommender']+':'))
+        print(('num.neighbors:',self.config['num.neighbors']))
+        print(('similarity:', self.config['similarity']))
+        print(('='*80))
 
     def initModel(self):
         self.topUsers = {}
@@ -62,9 +62,9 @@ class UserKNN(Recommender):
                         continue
                     sim = qmath.similarity(self.data.sRow(u1),self.data.sRow(u2),self.sim)
                     self.userSim.set(u1,u2,sim)
-            self.topUsers[u1]=sorted(iter(self.userSim[u1].items()), key=lambda d: d[1], reverse=True)
+            self.topUsers[u1]=sorted(iter(list(self.userSim[u1].items())), key=lambda d: d[1], reverse=True)
             if idx%100==0:
-                print('progress:',idx,'/',len(self.data.testSet_u))
+                print(('progress:',idx,'/',len(self.data.testSet_u)))
 
         print('The user similarities have been calculated.')
 

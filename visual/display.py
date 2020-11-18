@@ -86,6 +86,6 @@ class Display(object):
 
         html+="</div></body></html>"
         FileIO.writeFile('../visual/visualization/','analysis.html',html)
-        print('The report has been output to',abspath('../visual/visualization/analysis.html'))
+        print(('The report has been output to',abspath('../visual/visualization/analysis.html')))
         webbrowser.open(abspath('../visual/visualization/analysis.html'), new=0, autoraise=True)
 

@@ -130,7 +130,7 @@ class APR(DeepRecommender):
 
                 user_idx,item_idx,neg_item_idx = self.next_batch()
                 _,loss = sess.run([self.train,self.total_loss],feed_dict={self.u_idx: user_idx, self.v_idx: item_idx, self.neg_idx:neg_item_idx})
-                print('iteration:', epoch, 'loss:',loss)
+                print(('iteration:', epoch, 'loss:',loss))
 
 
                 self.P = sess.run(self.user_embeddings)
@@ -146,7 +146,7 @@ class APR(DeepRecommender):
                          feed_dict={self.u_idx: user_idx, self.v_idx: item_idx, self.neg_idx: neg_item_idx})
                 _,loss = sess.run([self.train_adv,self.loss_adv],feed_dict={self.u_idx: user_idx, self.v_idx: item_idx, self.neg_idx:neg_item_idx})
 
-                print('iteration:', epoch, 'loss:',loss)
+                print(('iteration:', epoch, 'loss:',loss))
 
                 self.P = sess.run(self.user_embeddings)
                 self.Q = sess.run(self.item_embeddings)

@@ -90,6 +90,7 @@ class RecQ(object):
                 for p in tasks:
                     p.join()
             # compute the average error of k-fold cross validation
+            print(mDict)
             self.measure = [dict(mDict)[i] for i in range(1, k + 1)]
             res = []
             for i in range(len(self.measure[0])):

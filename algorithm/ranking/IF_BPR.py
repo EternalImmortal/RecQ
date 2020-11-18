@@ -28,11 +28,11 @@ class IF_BPR(SocialRecommender):
 
     def printAlgorConfig(self):
         super(IF_BPR, self).printAlgorConfig()
-        print('Specified Arguments of', self.config['recommender'] + ':')
-        print('Walks count per user', self.walkCount)
-        print('Length of each walk', self.walkLength)
-        print('Dimension of user embedding', self.walkDim)
-        print('=' * 80)
+        print(('Specified Arguments of', self.config['recommender'] + ':'))
+        print(('Walks count per user', self.walkCount))
+        print(('Length of each walk', self.walkLength))
+        print(('Dimension of user embedding', self.walkDim))
+        print(('=' * 80))
 
     def readNegativeFeedbacks(self):
         self.negative = defaultdict(list)
@@ -233,8 +233,8 @@ class IF_BPR(SocialRecommender):
                         self.nWalks.append(path)
 
         shuffle(self.pWalks)
-        print('pwalks:', len(self.pWalks))
-        print('nwalks:', len(self.nWalks))
+        print(('pwalks:', len(self.pWalks)))
+        print(('nwalks:', len(self.nWalks)))
 
     def computeSimilarity(self):
         # Training get top-k friends
@@ -265,7 +265,7 @@ class IF_BPR(SocialRecommender):
             uSim = []
             i += 1
             if i % 200 == 0:
-                print(i, '/', len(self.positive))
+                print((i, '/', len(self.positive)))
             vec1 = self.W[self.data.user[user1]]
             for user2 in self.positive:
                 if user1 != user2:
@@ -284,7 +284,7 @@ class IF_BPR(SocialRecommender):
             uSim = []
             i += 1
             if i % 200 == 0:
-                print(i, '/', len(self.negative))
+                print((i, '/', len(self.negative)))
             vec1 = self.G[self.data.user[user1]]
             for user2 in self.negative:
                 if user1 != user2:
@@ -401,7 +401,7 @@ class IF_BPR(SocialRecommender):
             iteration += 1
             if self.isConverged(iteration):
                  break
-            print(self.foldInfo,'iteration:',iteration)
+            print((self.foldInfo,'iteration:',iteration))
         self.ranking_performance()
 
 
@@ -420,9 +420,9 @@ class IF_BPR(SocialRecommender):
         try:
             g_theta = sigmoid((self.pSimilarity[user][friend]-self.threshold[user])/(self.avg_sim[user]-self.threshold[user]))
         except OverflowError:
-            print('threshold',self.threshold[user],'smilarity',self.pSimilarity[user][friend],'avg',self.avg_sim[user])
-            print((self.pSimilarity[user][friend]-self.threshold[user]),(self.avg_sim[user]-self.threshold[user]))
-            print((self.pSimilarity[user][friend]-self.threshold[user])/(self.avg_sim[user]-self.threshold[user]))
+            print(('threshold',self.threshold[user],'smilarity',self.pSimilarity[user][friend],'avg',self.avg_sim[user]))
+            print(((self.pSimilarity[user][friend]-self.threshold[user]),(self.avg_sim[user]-self.threshold[user])))
+            print(((self.pSimilarity[user][friend]-self.threshold[user])/(self.avg_sim[user]-self.threshold[user])))
             exit(-1)
         #print 'g_theta',g_theta
 

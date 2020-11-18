@@ -14,9 +14,9 @@ class SoReg(SocialRecommender):
 
     def printAlgorConfig(self):
         super(SoReg, self).printAlgorConfig()
-        print('Specified Arguments of',self.config['recommender']+':')
-        print('alpha: %.3f' %self.alpha)
-        print('='*80)
+        print(('Specified Arguments of',self.config['recommender']+':'))
+        print(('alpha: %.3f' %self.alpha))
+        print(('='*80))
 
     def initModel(self):
         super(SoReg, self).initModel()

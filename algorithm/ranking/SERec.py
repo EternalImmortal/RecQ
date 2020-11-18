@@ -66,9 +66,9 @@ class SERec(SocialRecommender):
         self.vad_ndcg = -np.inf
         for i in range(self.maxIter):
 
-            print('ITERATION #%d' % i)
+            print(('ITERATION #%d' % i))
             self._update_factors(X, XT)
-            print(self.mu)
+            print((self.mu))
             self._update_expo(X, n_users)
             self.ranking_performance()
 

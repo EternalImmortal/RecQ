@@ -56,7 +56,7 @@ class CFGAN(DeepRecommender):
         D_regularizer = tf.contrib.layers.l2_regularizer(scale=0.001)
         xavier_init = tf.contrib.layers.xavier_initializer()
 
-        with tf.variable_scope("Generator"):
+        with tf.compat.v1.variable_scope("Generator"):
             # Generator Net
             self.C = tf.placeholder(tf.float32, shape=[None, self.num_items], name='C')
 
@@ -121,7 +121,7 @@ class CFGAN(DeepRecommender):
         self.G_loss = tf.reduce_mean(tf.log(1.-D_fake+10e-5)+self.alpha*tf.nn.l2_loss(tf.multiply(self.N_zr,G_sample)))
 
         # Only update D(X)'s parameters, so var_list = theta_D
-        self.D_solver = tf.train.AdamOptimizer(self.lRate).minimize(self.D_loss, var_list=theta_D)
+        self.D_solver = tf.compat.v1.train.AdamOptimizer(self.lRate).minimize(self.D_loss, var_list=theta_D)
         # Only update G(X)'s parameters, so var_list = theta_G
         self.G_solver = tf.train.AdamOptimizer(self.lRate).minimize(self.G_loss, var_list=theta_G)
 
@@ -145,7 +145,7 @@ class CFGAN(DeepRecommender):
                 _, G_loss = self.sess.run([self.G_solver, self.G_loss], feed_dict={self.C: C_u,self.mask:mask,self.N_zr:N_zr})
 
             #C_u, mask, N_u = self.next_batch()
-            print('iteration:', epoch, 'D_loss:', D_loss, 'G_loss', G_loss)
+            print(('iteration:', epoch, 'D_loss:', D_loss, 'G_loss', G_loss))
 
 
 

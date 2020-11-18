@@ -147,11 +147,11 @@ class CUNE_MF(IterativeRecommender):
 
     def printAlgorConfig(self):
         super(CUNE_MF, self).printAlgorConfig()
-        print('Specified Arguments of', self.config['recommender'] + ':')
-        print('Walks count per user', self.walkCount)
-        print('Length of each walk', self.walkLength)
-        print('Dimension of user embedding', self.walkDim)
-        print('='*80)
+        print(('Specified Arguments of', self.config['recommender'] + ':'))
+        print(('Walks count per user', self.walkCount))
+        print(('Length of each walk', self.walkLength))
+        print(('Dimension of user embedding', self.walkDim))
+        print(('='*80))
 
     def buildModel(self):
         print('Kind Note: This method will probably take much time.')
@@ -275,7 +275,7 @@ class CUNE_MF(IterativeRecommender):
             self.topKSim[user1] = sorted(sims, key=lambda d: d[1], reverse=True)[:self.topK]
             i += 1
             if i % 200 == 0:
-                print('progress:', i, '/', len(self.CUNet))
+                print(('progress:', i, '/', len(self.CUNet)))
         print('Similarity matrix finished.')
         
         #print self.topKSim

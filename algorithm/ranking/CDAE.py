@@ -108,7 +108,7 @@ class CDAE(DeepRecommender):
             _, loss= self.sess.run([optimizer, self.loss], feed_dict={self.X: batch_xs,self.mask_corruption:mask,
                                                                                      self.u_idx:users,self.positive:positive,self.negative:negative})
 
-            print(self.foldInfo,"Epoch:", '%04d' % (epoch + 1),"loss=", "{:.9f}".format(loss))
+            print((self.foldInfo,"Epoch:", '%04d' % (epoch + 1),"loss=", "{:.9f}".format(loss)))
             #print y
             #self.ranking_performance()
         print("Optimization Finished!")

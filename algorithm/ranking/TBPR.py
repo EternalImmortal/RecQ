@@ -101,8 +101,8 @@ class TBPR(SocialRecommender):
             # if self.theta==0:
             #     self.theta=0.02
             self.g_theta = (self.t_s-self.theta)*(self.theta-self.t_w)
-            print('Theta:',self.theta)
-            print('g_theta:',self.g_theta)
+            print(('Theta:',self.theta))
+            print(('g_theta:',self.g_theta))
             print('Preparing item sets...')
 
             self.jointSet = defaultdict(dict)

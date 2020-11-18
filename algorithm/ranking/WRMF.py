@@ -64,7 +64,7 @@ class WRMF(IterativeRecommender):
 
             #self.loss += (self.X * self.X).sum() + (self.Y * self.Y).sum()
             iteration += 1
-            print('iteration:',iteration,'loss:',self.loss)
+            print(('iteration:',iteration,'loss:',self.loss))
             # if self.isConverged(iteration):
             #     break
 

@@ -12,9 +12,9 @@ class RSTE(SocialRecommender):
 
     def printAlgorConfig(self):
         super(RSTE, self).printAlgorConfig()
-        print('Specified Arguments of',self.config['recommender']+':')
-        print('alpha: %.3f' %self.alpha)
-        print('='*80)
+        print(('Specified Arguments of',self.config['recommender']+':'))
+        print(('alpha: %.3f' %self.alpha))
+        print(('='*80))
 
     def initModel(self):
         super(RSTE, self).initModel()

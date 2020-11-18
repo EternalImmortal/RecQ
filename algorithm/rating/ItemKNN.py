@@ -15,10 +15,10 @@ class ItemKNN(Recommender):
     def printAlgorConfig(self):
         "show algorithm's configuration"
         super(ItemKNN, self).printAlgorConfig()
-        print('Specified Arguments of',self.config['recommender']+':')
-        print('num.neighbors:',self.config['num.neighbors'])
-        print('similarity:', self.config['similarity'])
-        print('='*80)
+        print(('Specified Arguments of',self.config['recommender']+':'))
+        print(('num.neighbors:',self.config['num.neighbors']))
+        print(('similarity:', self.config['similarity']))
+        print(('='*80))
 
     def initModel(self):
         self.topItems = {}
@@ -61,9 +61,9 @@ class ItemKNN(Recommender):
                         continue
                     sim = qmath.similarity(self.data.sCol(i1),self.data.sCol(i2),self.sim)
                     self.itemSim.set(i1,i2,sim)
-            self.topItems[i1] = sorted(iter(self.itemSim[i1].items()),key = lambda d:d[1],reverse=True)
+            self.topItems[i1] = sorted(iter(list(self.itemSim[i1].items())),key = lambda d:d[1],reverse=True)
             if idx%100==0:
-                print('progress:',idx,'/',len(self.data.testSet_i))
+                print(('progress:',idx,'/',len(self.data.testSet_i)))
         print('The item similarities have been calculated.')
 
 
