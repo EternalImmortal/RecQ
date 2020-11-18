@@ -154,7 +154,7 @@ class IterativeRecommender(Recommender):
                 r = N - 1
                 if recommendations[r] < itemSet[item]:
                     while True:
-                        mid = (l + r) / 2
+                        mid = int((l + r) / 2)
                         if recommendations[mid] >= itemSet[item]:
                             l = mid + 1
                         elif recommendations[mid] < itemSet[item]:
