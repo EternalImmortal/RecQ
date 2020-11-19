@@ -26,6 +26,7 @@ class RSGAN(SocialRecommender,DeepRecommender):
         self.negative = defaultdict(list)
         self.nItems = defaultdict(list)
         filename = self.config['ratings'][:-4]+'_n.txt'
+        filename = self.config['ratings']
         with open(filename) as f:
             for line in f:
                 items = line.strip().split()
@@ -103,7 +104,7 @@ class RSGAN(SocialRecommender,DeepRecommender):
                     lastNode = user
                     nextNode = user
                     lastType = 'U'
-                    for i in range(self.walkLength / len(mp[1:])):
+                    for i in range(int(self.walkLength / len(mp[1:]))):
                         for tp in mp[1:]:
                             try:
                                 if tp == 'I':
@@ -163,7 +164,7 @@ class RSGAN(SocialRecommender,DeepRecommender):
                     lastNode = user
                     nextNode = user
                     lastType = 'U'
-                    for i in range(self.walkLength / len(mp[1:])):
+                    for i in range(int(self.walkLength / len(mp[1:]))):
                         for tp in mp[1:]:
                             try:
                                 if tp == 'I':
