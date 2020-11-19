@@ -445,7 +445,6 @@ class RSGAN(SocialRecommender,DeepRecommender):
         'invoked to rank all the items for the user'
         if self.data.containsUser(u):
             u = self.data.user[u]
-            print(u)
             # In our experiments, discriminator performs better than generator
             res = self.sess.run(self.d_output, {self.u_idx: [u]})
             return res
