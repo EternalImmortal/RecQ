@@ -7,6 +7,7 @@ from multiprocessing import Process, Manager
 from tool.file import FileIO
 from time import strftime, localtime, time
 import mkl
+sys.path.append("..")
 
 
 class RecQ(object):
