@@ -62,7 +62,9 @@ class RecQ(object):
             k = int(self.evaluation['-cv'])
             if k <= 1 or k > 10:  # limit to 1-10 fold cross validation
                 k = 3
-            mkl.set_num_threads(max(1, mkl.get_max_threads() / k))
+            max_threads = mkl.get_max_threads()
+            print('get_max_threads= ' + str(max_threads))
+            mkl.set_num_threads(int(max(1, mkl.get_max_threads() / k)))
             # create the manager for communication among multiple processes
             manager = Manager()
             mDict = manager.dict()
